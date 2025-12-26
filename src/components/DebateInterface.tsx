@@ -54,12 +54,50 @@ export default function DebateInterface({ topic, position, difficulty, timeLimit
     const [isTyping, setIsTyping] = useState(false);
     const [isSpeaking, setIsSpeaking] = useState(false);
     const [timeLeft, setTimeLeft] = useState(timeLimit * 60);
+    const [audioStarted, setAudioStarted] = useState(false);
+    const [pendingSpeech, setPendingSpeech] = useState<string | null>(null);
     const scrollRef = useRef<HTMLDivElement>(null);
     const hasStarted = useRef(false);
     const timerRef = useRef<NodeJS.Timeout | null>(null);
 
+    const unlockAudio = useCallback(() => {
+        if (audioStarted) return;
+        const utterance = new SpeechSynthesisUtterance("");
+        utterance.volume = 0;
+        window.speechSynthesis.speak(utterance);
+        setAudioStarted(true);
+
+        // If there's speech waiting to be played, play it now
+        if (pendingSpeech) {
+            speakText(pendingSpeech);
+            setPendingSpeech(null);
+        }
+    }, [audioStarted, pendingSpeech]);
+
+    useEffect(() => {
+        const handleInteraction = () => {
+            unlockAudio();
+            window.removeEventListener('click', handleInteraction);
+            window.removeEventListener('touchstart', handleInteraction);
+        };
+        window.addEventListener('click', handleInteraction);
+        window.addEventListener('touchstart', handleInteraction);
+        return () => {
+            window.removeEventListener('click', handleInteraction);
+            window.removeEventListener('touchstart', handleInteraction);
+        };
+    }, [unlockAudio]);
+
+
     const speakText = useCallback((text: string) => {
         if (!text) return;
+
+        // On mobile, we can't speak until the user has interacted.
+        // If they haven't yet, we queue it up.
+        if (!audioStarted && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+            setPendingSpeech(text);
+            return;
+        }
 
         window.speechSynthesis.cancel();
         const utterance = new SpeechSynthesisUtterance(text);
@@ -79,7 +117,7 @@ export default function DebateInterface({ topic, position, difficulty, timeLimit
         if (cleanText.length > 0) {
             window.speechSynthesis.speak(utterance);
         }
-    }, [setIsSpeaking]);
+    }, [setIsSpeaking, audioStarted, setPendingSpeech]);
 
     const getAIResponse = useCallback(async (history: Message[]) => {
         setIsTyping(true);
@@ -216,7 +254,15 @@ export default function DebateInterface({ topic, position, difficulty, timeLimit
                 </div>
             </div>
 
-            <div ref={scrollRef} className="flex-1 overflow-y-auto px-6 py-8 space-y-6">
+            <div ref={scrollRef} className="flex-1 overflow-y-auto px-6 py-8 space-y-6 relative">
+                {pendingSpeech && !audioStarted && (
+                    <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/20 backdrop-blur-[2px] animate-fade-in">
+                        <div className="glass px-6 py-3 rounded-full border-white/20 text-white font-medium flex items-center gap-3 animate-bounce">
+                            <span className="text-xl">🔊</span>
+                            Tap anywhere to hear the AI
+                        </div>
+                    </div>
+                )}
                 {messages.map((m, i) => (
                     <div
                         key={i}
