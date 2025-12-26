@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Debate AI | Challenge Your Reasoning",
+  title: "Reflex | Challenge Your Reasoning",
   description: "Test your beliefs against an advanced AI debater. Sharp logic, voice integration, and performance analysis.",
 };
 

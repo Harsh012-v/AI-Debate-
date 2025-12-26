@@ -1,6 +1,6 @@
-# Debate AI - Advanced Reasoning Platform
+# Reflex - Advanced Reasoning Platform
 
-Debate AI is an interactive platform designed to test your reasoning skills. Challenge your beliefs against an advanced AI debater that provides sharp, concise counter-arguments.
+Reflex is an interactive platform designed to test your reasoning skills. Challenge your beliefs against an advanced AI debater that provides sharp, concise counter-arguments.
 
 ## 🚀 Key Features
 

@@ -6,9 +6,9 @@ export default function Navbar() {
             <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
                 <Link href="/" className="flex items-center gap-2">
                     <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center">
-                        <span className="text-black font-bold text-xl">D</span>
+                        <span className="text-black font-bold text-xl">R</span>
                     </div>
-                    <span className="font-bold text-xl tracking-tight gradient-text">Debate AI</span>
+                    <span className="font-bold text-xl tracking-tight gradient-text">Reflex</span>
                 </Link>
                 <div className="flex items-center gap-6">
                     <Link href="/history" className="text-sm text-secondary hover:text-white transition-colors">History</Link>
